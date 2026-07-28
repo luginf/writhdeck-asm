@@ -31,6 +31,7 @@ UIK_CTRL_Y      = 18
 UIK_CTRL_F      = 19
 UIK_CTRL_R      = 20
 UIK_CTRL_SPACE  = 21
+UIK_F11         = 22
 
 UI_ATTR_NORMAL  = 0
 UI_ATTR_REVERSE = 1
@@ -525,8 +526,14 @@ ui_read_event:
     cmp ebx, '9'
     jg .ret
 
-    mov ecx, ebx
-    sub ecx, '0'
+    ; L'accumulateur des chiffres NE PEUT PAS etre ecx : term_read_byte
+    ; (appele a chaque tour de .num_loop) descend jusqu'a sys_read, qui
+    ; charge ecx avec le pointeur du tampon pour l'appel systeme (voir
+    ; buffer.asm:sys_read) -- ecx est caller-saved, donc ecx serait
+    ; ecrase a CHAQUE iteration si on l'utilisait ici. ebx, lui, est
+    ; callee-saved (voir macros.inc) : il survit intact a travers
+    ; term_read_byte/sys_read.
+    sub ebx, '0'
 .num_loop:
     call term_read_byte
     cmp eax, -1
@@ -535,25 +542,27 @@ ui_read_event:
     jl .num_done
     cmp eax, '9'
     jg .num_done
-    imul ecx, ecx, 10
+    imul ebx, ebx, 10
     sub eax, '0'
-    add ecx, eax
+    add ebx, eax
     jmp .num_loop
 .num_done:
-    cmp ecx, 1
+    cmp ebx, 1
     je .set_home
-    cmp ecx, 7
+    cmp ebx, 7
     je .set_home
-    cmp ecx, 4
+    cmp ebx, 4
     je .set_end
-    cmp ecx, 8
+    cmp ebx, 8
     je .set_end
-    cmp ecx, 3
+    cmp ebx, 3
     je .set_delete
-    cmp ecx, 5
+    cmp ebx, 5
     je .set_pgup
-    cmp ecx, 6
+    cmp ebx, 6
     je .set_pgdn
+    cmp ebx, 23
+    je .set_f11
     jmp .ret
 .set_home:
     mov dword [esi], UIK_HOME
@@ -569,6 +578,9 @@ ui_read_event:
     jmp .ret
 .set_pgdn:
     mov dword [esi], UIK_PGDN
+    jmp .ret
+.set_f11:
+    mov dword [esi], UIK_F11
     jmp .ret
 
 .not_escape:

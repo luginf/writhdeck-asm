@@ -10,6 +10,7 @@ SYS_WRITE   = 4
 SYS_OPEN    = 5
 SYS_CLOSE   = 6
 SYS_UNLINK  = 10
+SYS_TIME    = 13
 SYS_BRK     = 45
 
 O_RDONLY    = 0

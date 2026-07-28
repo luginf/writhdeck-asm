@@ -16,11 +16,19 @@ include '../src/strutil.asm'
 include '../src/utf8.asm'
 include '../src/term.asm'
 include '../src/buffer.asm'
+include '../src/highlight.asm'
 include '../src/editor.asm'
 include '../src/ui_ansi.asm'
 include '../src/draw.asm'
+include '../src/config.asm'
 
 _start:
+    ; g_cfg_status_left/center/right doivent pointer vers une valeur
+    ; heap-allouee (jamais 0) avant le premier appel a build_status_line
+    ; -- voir cfg_load_string_defaults (config.asm). Ce test n'appelle
+    ; pas cfg_init (pas d'envp ici), donc l'appel direct est necessaire.
+    call cfg_load_string_defaults
+
     call editor_new
     mov esi, eax
 
@@ -46,3 +54,4 @@ include '../src/heap_data.inc'
 include '../src/term_data.inc'
 include '../src/ui_data.inc'
 include '../src/draw_data.inc'
+include '../src/config_data.inc'
