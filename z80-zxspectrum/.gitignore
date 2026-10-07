@@ -1,0 +1,9 @@
+tests/*.sna
+tests/*.sym
+core/*.sna
+core/*.sym
+tests/*.tap
+tests/__pycache__/
+spectrum/*.tap
+spectrum/*.sna
+spectrum/*.sym

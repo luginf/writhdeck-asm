@@ -26,7 +26,7 @@ make writhdeck
 
 Faithful port of `writhdeck-c/src/{buffer,editor,utf8,ui_ansi,highlight}.c`
 and ` common.c:ascii_stristr`, plus a minimal main loop:
-dsfsf
+
 - `src/heap.asm` -- malloc/free/realloc (brk-based, implicit list,
   full-pass coalescing on every free)
 - `src/strutil.asm` -- memcpy/memmove/memset/strlen/strdup,
